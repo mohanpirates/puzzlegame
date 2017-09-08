@@ -1,167 +1,134 @@
 //if click on start/reset
 
-var startreset = document.getElementById('startreset');
+var playing = false;
 
-var countdown = document.getElementById('timevalue');
+var action;
+
+var correctanswr;
+
+var correctbox;
+
+var wronganswr;
+
+var timevalue;
+
+var score;
+
+var scorevalue = document.getElementById('scorevalue');
+
+var timeremaining = document.getElementById('timeremaining');
 
 var gameover = document.getElementById('gameover');
 
-var question = document.getElementById('question');
+var count = document.getElementById('timevalue');
 
-var correctanswer = document.getElementById('correct');
 
-var wronganswer = document.getElementById('wrong');
+var startreset = document.getElementById('startreset');
 
-var score = document.getElementById('scorevalue');
-
-var scoreno = 0;
-
-var box = document.getElementsByClassName('box');
-
-var number1 = Math.floor(1+Math.random()*10);
-var number2 = Math.floor(1+Math.random()*10);
-
-var product;
-
-countdown.innerHTML = "30";
-
-var timeremain = document.getElementById('timeremaining');
-
-var btn;
-
-var b = startreset.innerHTML;
-
-var x = 30;
-
-var i = 0; //for indexing
-
-var g = 0; 
-
-var answer;
-
-var correct;
+startreset.onclick = function(){
+    
+//if we are playing
+    
+    if(playing == true){
        
-    startreset.onclick = function (){
-
-         obj = {
-             
-             gamefull: function(){
-                 
-                   product = number1 * number2;
-            
-            question.innerHTML = number1+"x"+number2;
-            
-            while(i < box.length){
-                  
-                 box[i].innerHTML = Math.floor(1+Math.random()*100);
-                
-                  i++;
-                  }
-            
-           answer = Math.floor(Math.random()*3);
-            
-            box[answer].innerHTML = product;
-            
-             while(g < box.length){
-                   
-                 box[g].onclick = function(){
-                     
-                      correct =   this.innerHTML;       
-                     
-                     if(correct.trim()==product){
-                        correctanswer.style.display = "block";
-                        setTimeout(function(){
-                            
-                        correctanswer.style.display = "none";    
-                            
-                        },1000)
-                         
-                         scoreno++;
-                         
-                         score.innerHTML = scoreno;
-                         
-                         obj.gamefull();
-                         
-                        }
-                        else{
-                            wronganswer.style.display = "block";
-                        setTimeout(function(){
-                            
-                        wronganswer.style.display = "none";    
-                            
-                        },1000)
-                            
-                        }
-                 } 
-                     
-                   g++;  
-                   }
-            
-            
-            
-            
+        location.reload();
         
-    //btn = document.getElementById('startreset').innerHTML;
-  
-    timeremain.style.visibility = "visible";
-    
-   startreset.innerHTML = "Reset Game";
-    
-        b = startreset.innerHTML;
-        
-    count = setInterval(function(){
-        x--;        
-        countdown.innerHTML = x;
-        if(x<=0){
-            
-            clearInterval(count);
-            
-            gameover.style.display = "block";
-            
-            gameover.children[1].innerHTML = "Your Score is "+scoreno;
-            
-            
-                
-        }
+       }
+       else{
+           //if we are not playing
+           
+           playing = true;
+           
+           score = 0;
+           
+           timevalue = 60;
+           
+           //setting the innerHTML of time remaining to 30
+           
+                                //set score to 0
+           
+           scorevalue.innerHTML = score;
+           
+                     //change button to reset
+           
+           startreset.innerHTML = "Reset Game";
+           
+                         //show countdown box
+           
+            show("timeremaining");
+           
+             hide('gameover');
+           
+           //reduce time by 1sec in loops
+           
+           showCountdown();
+           
+           //generate new code Q&A
+           
+           generateQA();
+           
        
-    },1000);
-                 
-             }
-         }  
-        
-        
-        if(b.trim() === "Start Game"){
-            
-            obj.gamefull();
-          
-        }
-        else if(b.trim() === "Reset Game"){
-                
-            location.reload();
-            
-                }
-        
+       }
     
-  
+}
+
+//if we click on answer box
+var i=1;
+
+for(i=1;i<5;i++){
+document.getElementById('box-'+i).onclick = function(){
+    
+    //correct?
+    
+    
+    if(playing==true){
+      
+        if(correctanswr==this.innerHTML){
+           
+            //if answer is correct
+            
+             //increase score
+            score++;
+            
+            scorevalue.innerHTML = score;
+            
+            //show correct box for 1 sec            
+            show('correct');
+            hide('wrong');
+            
+            setTimeout(function(){
+                hide('correct');
+                
+            },1000);
+            
+            generateQA();
+           
+           }
+           else{
+               
+               //if answer is wrong
+               
+               //show wrong box for 1 sec
+                show('wrong');
+            hide('correct');
+            
+            setTimeout(function(){
+                hide('wrong');
+                
+            },1000);
+           
+           
+           }
+      
+        
+       }
+   
+}
 }
 
 
 
 
-
-//if we are playing
-  //reload page
-//if we are not playing
-   //set score to 0
-//show countdown box
-//reduce time by 1sec in loops
-  //timeleft
-    //yes->continue
-     //no->game over
-//change button to reset
- //generate new code Q&A
-
-//if we click on answer box
   //if we are playing
      //correct?
        //yes
@@ -171,3 +138,104 @@ var correct;
           //no
            //show try again box for 1sec
 
+   //-----All Functions----
+
+  //show the countdown
+
+   function showCountdown(){
+       
+  action = setInterval(function(){
+      
+       count.innerHTML = timevalue;
+                  
+      if(timevalue==0){
+         
+          stopcountdown();
+          
+         }
+      
+       timevalue -= 1;
+      
+  },1000);
+       
+   }
+
+//stop the countdown
+
+function stopcountdown(){
+    
+    clearInterval(action);
+    
+      show("gameover");
+    
+    gameover.innerHTML = "<p>Game Over!</p><p>Your Score is "+score+"</p>";
+    
+    startreset.innerHTML = "Start Game";
+    
+       hide('correct');
+    
+        hide('wrong');
+    
+        playing = false;
+     
+      hide("timeremaining");
+    
+      
+    
+}
+
+//show elements
+
+function show(id){
+    
+    document.getElementById(id).style.display = "block";
+    
+}
+
+//hide elements
+
+function hide(id){
+    
+    document.getElementById(id).style.display = "none";
+    
+}
+
+//generate questons for multiplication of a number
+
+function generateQA(){
+    
+    var n1 = 1+Math.round(9*Math.random());
+    
+    var n2 = 1+Math.round(9*Math.random());
+    
+    document.getElementById('question').innerHTML = n1+"x"+n2;
+    
+    correctanswr = n1 * n2;
+    
+    correctbox = 1+Math.round(Math.random()*3)
+    
+    document.getElementById('box-'+correctbox).innerHTML=correctanswr;
+    
+    //fill out other boxes except correct one
+    
+        var arr = [correctanswr];
+    
+      for(i=1;i<5;i++){
+          
+          if(i!=correctbox)
+              {
+                  
+                 do{
+                     
+                      wronganswr = (1+Math.round(9*Math.random()))*(1+Math.round(9*Math.random()));
+                     
+                 }while(arr.indexOf(wronganswr)>-1);
+                  
+                  document.getElementById('box-'+i).innerHTML = wronganswr;
+                  
+              }
+          
+      }
+    
+    
+}
