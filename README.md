@@ -1,2 +1,2 @@
 # mathgame
-![alt text](shot.png "Description goes here")
+![alt text](shot.PNG "Description goes here")
